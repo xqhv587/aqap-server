@@ -1,0 +1,53 @@
+spring:
+  datasource:
+    druid:
+      username: DevUser
+      password: Dev2User
+      url: jdbc:sqlserver://hz-itdb-dev\dev;databasename=tech_doc
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    type: com.alibaba.druid.pool.DruidDataSource
+  redis:
+    host: ${REDIS_HOST:172.17.10.175}
+    port: ${REDIS_PORT:6379}
+#    auth: ${REDIS_AUTH:Arcsoft01}
+#    password: ${REDIS_PASSWORD:Arcsoft01}
+    password: ${REDIS_PASSWORD:docserver123456!}
+  cloud:
+      # 使用consul作为注册中心
+    consul:
+      host: ${CONSUL_HOST:172.17.10.175}
+      port: ${CONSUL_PORT:8500}
+      discovery:
+        enabled: true
+        prefer-ip-address: true
+        health-check-critical-timeout: 30s
+        health-check-interval: 60s
+        healthCheckUrl: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+
+
+# 集群ID生成配置
+cluster:
+  workId: ${CLUSTER_WORKID:6}
+  dataCenterId: ${CLUSTER_DATA_CENTER_ID:6}
+
+logging:
+  level:
+    root: info
+    com.arcsoft.docserver: debug
+
+AQAP:
+  functionId: 13300
+
+
+
+

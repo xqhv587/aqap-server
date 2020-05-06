@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.arcsoft.docserver.aqapserver.mapper.DictionaryMapper">
+    <resultMap id="judgeResultMap" type="com.arcsoft.docserver.aqapserver.entity.pojo.Dictionary">
+        <result column="ID" property="ID"/>
+        <result column="itemName" property="itemName"/>
+        <result column="itemType" property="itemType"/>
+    </resultMap>
+
+<!--    <resultMap id="userVoResultMap" type="com.github.tangyi.common.core.vo.UserVo">-->
+<!--        <id column="id" property="id"/>-->
+<!--        <result column="name" property="name"/>-->
+<!--        <collection property="roleList" ofType="com.github.tangyi.common.core.vo.Role">-->
+<!--            <id column="roleId" property="id"/>-->
+<!--            <result column="role_name" property="roleName"/>-->
+<!--        </collection>-->
+<!--    </resultMap>-->
+
+    <sql id="judgeColumns">
+        ID
+        ItemName
+        ItemType
+        preLevel
+        endLevel
+        remark
+    </sql>
+
+    <!-- where 条件 -->
+    <sql id="whereColumnList">
+        <if test="name != null and name != ''">
+            and a.name like CONCAT('%', #{username},'%')
+        </if>
+        <if test="username != null and username != ''">
+            and a.username like #{username}
+        </if>
+        <if test="born != null and born != '' ">
+            and a.born like #{born}
+        </if>
+        <if test="phone != null and phone != ''">
+            and a.phone like #{phone}
+        </if>
+        <if test="email != null and email != ''">
+            and a.email = #{email}
+        </if>
+        <if test="status != null and status != ''">
+            and a.status = #{status}
+        </if>
+        <if test="tenantCode != null and tenantCode != ''">
+            and a.tenant_code = #{tenantCode}
+        </if>
+    </sql>
+
+
+    <select id="getLevelByDictionaryId" resultType="com.arcsoft.docserver.aqapserver.entity.pojo.Dictionary">
+        SELECT [ID]
+        ,[ItemName]
+        ,[ItemType]
+        ,remark
+        ,([ItemId])/2 preLevel,([ItemId])%2 endLevel
+        FROM [tech_doc].[dbo].[AQAP_Dictionary]
+        where ItemId = #{dictionaryId} and ItemType = 1
+
+    </select>
+
+
+</mapper>

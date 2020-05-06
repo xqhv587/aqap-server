@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.arcsoft.docserver.aqapserver.mapper.JudgeMapper">
+    <resultMap id="judgeResultMap" type="com.arcsoft.docserver.aqapserver.entity.pojo.Judge">
+        <result column="ID" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="level_id" property="levelId"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="team" property="team"/>
+    </resultMap>
+
+<!--    <resultMap id="userVoResultMap" type="com.github.tangyi.common.core.vo.UserVo">-->
+<!--        <id column="id" property="id"/>-->
+<!--        <result column="name" property="name"/>-->
+<!--        <collection property="roleList" ofType="com.github.tangyi.common.core.vo.Role">-->
+<!--            <id column="roleId" property="id"/>-->
+<!--            <result column="role_name" property="roleName"/>-->
+<!--        </collection>-->
+<!--    </resultMap>-->
+
+    <sql id="judgeColumns">
+        a.ID ,
+        a.user_id ,
+        a.level_id ,
+        a.update_time,
+        b.dept_id,
+        b.real_name+'('+b.last_name+' '+b.first_name+')' as comPoseName
+    </sql>
+
+
+    <select id="getPermission" resultType="java.lang.Integer">
+        exec PS_QueryPermission #{functionId},#{currentloginusername}
+    </select>
+
+    <select id="getJudgeList1" resultMap="judgeResultMap">
+        select
+        <include refid="judgeColumns"/>
+        from dbo.AQAP_Judge a
+
+        left join access_user b on a.user_id =b.user_id
+        left join access_group c on b.dept_id = c.group_id
+        left join access_group d on b.division = d.group_id
+        where 1=1
+        <if test="team != null and team != '' ">
+            and b.dept_id = #{team}
+        </if>
+
+        <if test="userName != null and userName != ''  ">
+            and b.real_name+'('+b.last_name+' '+b.first_name+')' like #{userName}
+        </if>
+
+        <if test="level != null ">
+            and a.level_id  = #{level}
+        </if>
+
+        <if test="permission == 0 ">
+            and 1=2
+        </if>
+
+        <if test="permission == 1  ">
+            and a.user_id = #{currentloginusername}
+        </if>
+
+        <if test="permission == 10  ">
+            and c.director_id = #{currentloginusername}
+        </if>
+
+        <if test="permission == 100  ">
+            and d.director_id = #{currentloginusername}
+        </if>
+
+        <if test=" sorts!=null and sorts!='' ">
+          <if test=" order==null or order=='' ">
+            order by ${sorts} asc
+          </if>
+        </if>
+
+        <if test=" sorts!=null and sorts!='' ">
+            <if test=" order!=null and order!='' ">
+             order by ${sorts} ${order}
+            </if>
+        </if>
+
+    </select>
+<!--    <select id="get" resultMap="userResultMap">-->
+<!--        SELECT-->
+<!--        <include refid="userColumns"/>-->
+<!--        FROM sys_user a-->
+<!--        WHERE a.id = #{id}-->
+<!--    </select>-->
+
+<!--    <select id="userCount" resultType="Integer">-->
+<!--        SELECT COUNT(1) FROM sys_user a WHERE a.del_flag = 0-->
+<!--    </select>-->
+
+<!--    <select id="findList" resultMap="userResultMap">-->
+<!--        SELECT-->
+<!--        <include refid="userColumns"/>-->
+<!--        FROM sys_user  a-->
+<!--        WHERE a.del_flag = 0-->
+<!--        <include refid="whereColumnList"/>-->
+<!--    </select>-->
+
+<!--    <select id="findListById" resultMap="userResultMap">-->
+<!--        SELECT-->
+<!--        <include refid="userColumns"/>-->
+<!--        FROM sys_user  a-->
+<!--        WHERE a.id IN-->
+<!--        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">-->
+<!--            #{item}-->
+<!--        </foreach>-->
+<!--    </select>-->
+
+
+
+
+
+
+
+</mapper>

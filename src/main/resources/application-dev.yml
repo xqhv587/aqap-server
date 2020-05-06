@@ -1,0 +1,99 @@
+spring:
+  datasource:
+    druid:
+      username: DevUser
+      password: Dev2User
+      url: jdbc:sqlserver://hz-itdb-dev\dev;databasename=tech_doc
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  redis:
+    host: ${REDIS_HOST:172.17.186.172}
+    port: ${REDIS_PORT:6379}
+#    auth: ${REDIS_AUTH:Arcsoft01}
+    password: ${REDIS_PASSWORD:Arcsoft01}
+#    password: ${REDIS_PASSWORD:docserver123456!}
+  rabbitmq:
+    host: ${RABBIT_HOST:172.17.186.172}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBITMQ_DEFAULT_USER:user}
+    password: ${RABBITMQ_DEFAULT_PASS:password}
+  cloud:
+      # 使用consul作为注册中心
+    consul:
+      host: ${CONSUL_HOST:172.17.10.175}
+      port: ${CONSUL_PORT:8500}
+      discovery:
+        enabled: true
+        prefer-ip-address: true
+        health-check-critical-timeout: 5s
+        health-check-interval: 1s
+        healthCheckUrl: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+
+
+feign:
+  hystrix:
+    enabled:  true
+
+# hystrix配置
+hystrix:
+  shareSecurityContext: true
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+ignore:
+  urls:
+    - /
+    - /error
+    - /favicon.ico
+    - /**/*swagger*/**
+    - /v2/api-docs
+    - /csrf
+    - /actuator/**
+    - /hystrix.sender
+    - /v1/user/findUserByUsername/**
+    - /v1/menu/findMenuByRole/**
+    - /v1/menu/findAllMenu
+    - /v1/user/checkExist/**
+    - /v1/code/**
+    - /v1/attachment/download
+    - /v1/log/**
+    - /authentication/**
+    - /**/*.css
+    - /**/*.js
+    - /social
+    - /signin
+    - /signup
+    - /info
+    - /health
+    - /metrics/**
+    - /loggers/**
+    - /mobile/token
+
+# 集群ID生成配置
+cluster:
+  workId: ${CLUSTER_WORKID:6}
+  dataCenterId: ${CLUSTER_DATA_CENTER_ID:6}
+
+logging:
+  level:
+    root: info
+    com.arcsoft.docserver: debug
+
+mail-job:
+  from: doc@arcsoft.com.cn
+  is-test: true
+
+jira:
+  url: https://jiratest.arcsoft.com.cn:8443
